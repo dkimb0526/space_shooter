@@ -13,9 +13,9 @@ running = True
 clock = pygame.time.Clock()
 
 class Star(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, groups, surf):
         super().__init__(groups)
-        self.image = pygame.image.load(join("..","images","star.png")).convert_alpha()
+        self.image = surf
         self.rect = self.image.get_frect(center=(randint(0,WINDOW_WIDTH),randint(0,WINDOW_HEIGHT)))
     def update(self,dt):
         pass
@@ -47,11 +47,12 @@ class Player(pygame.sprite.Sprite):
 
 all_sprites = pygame.sprite.Group()
 
-player = Player(all_sprites)
+star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
 
 for i in range(20):
-    star = Star(all_sprites)
+    Star(all_sprites, star_surf)
 
+player = Player(all_sprites)
 
 while running:
     dt = clock.tick()/1000
@@ -64,7 +65,6 @@ while running:
     display_surface.fill("aquamarine")
 
     all_sprites.update(dt)
-
 
     all_sprites.draw(display_surface)
 
