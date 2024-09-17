@@ -13,11 +13,11 @@ running = True
 clock = pygame.time.Clock()
 
 class Star(pygame.sprite.Sprite):
-    def __init__(self, x,y):
-        super().__init__()
+    def __init__(self, groups):
+        super().__init__(groups)
         self.image = pygame.image.load(join("..","images","star.png")).convert_alpha()
-        self.rect = self.image.get_frect(center=(x,y))
-    def update(self):
+        self.rect = self.image.get_frect(center=(randint(0,WINDOW_WIDTH),randint(0,WINDOW_HEIGHT)))
+    def update(self,dt):
         pass
 
 class Player(pygame.sprite.Sprite):
@@ -46,16 +46,11 @@ class Player(pygame.sprite.Sprite):
 
 
 all_sprites = pygame.sprite.Group()
-print(all_sprites)
-print("==========")
-player = Player(all_sprites)
-print(all_sprites)
 
-star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
-star_position = []
+player = Player(all_sprites)
 
 for i in range(20):
-    star_position.append([randint(0,WINDOW_WIDTH), randint(0,WINDOW_HEIGHT)])
+    star = Star(all_sprites)
 
 
 while running:
@@ -70,8 +65,7 @@ while running:
 
     all_sprites.update(dt)
 
-    for x,y in star_position:
-        display_surface.blit(star_surf,(x,y))
+
     all_sprites.draw(display_surface)
 
     pygame.display.update()
