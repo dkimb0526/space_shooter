@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.Vector2()
         self.speed = 300
 
-    def update(self):
+    def update(self, dt):
         keys = pygame.key.get_pressed()
         self.direction.x = int(keys[pygame.K_RIGHT]) - int(keys[pygame.K_LEFT])
         self.direction.y = int(keys[pygame.K_DOWN]) - int(keys[pygame.K_UP])
@@ -30,6 +30,9 @@ class Player(pygame.sprite.Sprite):
         self.direction = self.direction.normalize() if self.direction else self.direction
         self.rect.center += self.direction * self.speed * dt
 
+        recent_keys = pygame.key.get_just_pressed()
+        if recent_keys[pygame.K_SPACE]:
+            print("fire")
 
 
 
@@ -57,7 +60,7 @@ while running:
 
     display_surface.fill("aquamarine")
 
-    all_sprites.update()
+    all_sprites.update(dt)
 
     for x,y in star_position:
         display_surface.blit(star_surf,(x,y))
