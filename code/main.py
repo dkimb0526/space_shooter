@@ -12,6 +12,14 @@ pygame.display.set_caption("space shooter")
 running = True
 clock = pygame.time.Clock()
 
+class Star(pygame.sprite.Sprite):
+    def __init__(self, x,y):
+        super().__init__()
+        self.image = pygame.image.load(join("..","images","star.png")).convert_alpha()
+        self.rect = self.image.get_frect(center=(x,y))
+    def update(self):
+        pass
+
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, groups):
@@ -64,8 +72,7 @@ while running:
 
     for x,y in star_position:
         display_surface.blit(star_surf,(x,y))
-    display_surface.blit(player.image, player.rect)
-
+    all_sprites.draw(display_surface)
 
     pygame.display.update()
 
