@@ -54,12 +54,19 @@ for i in range(20):
 
 player = Player(all_sprites)
 
+#custom event
+meteor_event = pygame.event.custom_type()
+#miliseconds, 500 = 0.5 seconds
+pygame.time.set_timer(meteor_event,500)
+
 while running:
     dt = clock.tick()/1000
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+        if event.type == meteor_event:
+            print("create meteor")
     #clock.tick(60)
 
     display_surface.fill("aquamarine")
