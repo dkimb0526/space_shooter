@@ -1,6 +1,6 @@
 import pygame
 from os.path import join
-from random import randint
+from random import randint, uniform
 
 
 
@@ -64,14 +64,36 @@ class Laser(pygame.sprite.Sprite):
 
     def update(self, dt):
         self.rect.centery -= 400 *dt
+        if self.rect.bottom < 0:
+            self.kill()
+
+class Meteor(pygame.sprite.Sprite):
+    def __init__(self, surf, pos, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(center = pos)
+        self.start_time = pygame.time.get_ticks()
+        self.life_time = 3000
+        self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
+        self.speed = randint(400,500)
+
+    def update(self, dt):
+        self.rect.center += self.direction * self.speed * dt
+        #self.start
+        if pygame.time.get_ticks() - self.start_time >= self.life_time:
+            self.kill()
+
+    
 
 
 
-all_sprites = pygame.sprite.Group()
-
+#imports
 star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
 laser_surf = pygame.image.load(join("..","images","laser.png")).convert_alpha()
+meteor_surf = pygame.image.load(join("..","images","meteor.png")).convert_alpha()
 
+#sprites
+all_sprites = pygame.sprite.Group()
 for i in range(20):
     Star(all_sprites, star_surf)
 
@@ -89,7 +111,8 @@ while running:
             running = False
 
         if event.type == meteor_event:
-            print("create meteor")
+            x, y = randint(0,WINDOW_WIDTH),randint(-200,-100)
+            Meteor(meteor_surf,(x,y), all_sprites)
     #clock.tick(60)
 
     display_surface.fill("aquamarine")
