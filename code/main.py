@@ -62,6 +62,8 @@ class Laser(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(midbottom = pos)
 
+    def update(self, dt):
+        self.rect.centery -= 400 *dt
 
 
 
