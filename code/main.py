@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 300
         self.can_shoot = True
         self.laser_shoot_time = 0
+        #miliseconds
         self.cooldown_duration = 400
 
     def laser_time(self):
@@ -49,16 +50,25 @@ class Player(pygame.sprite.Sprite):
 
         recent_keys = pygame.key.get_just_pressed()
         if recent_keys[pygame.K_SPACE] and self.can_shoot:
-            print("fire")
+            Laser(laser_surf, self.rect.midtop, all_sprites)
             self.can_shoot = False
             self.laser_shoot_time = pygame.time.get_ticks()
 
         self.laser_time()
 
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, surf, pos, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(midbottom = pos)
+
+
+
 
 all_sprites = pygame.sprite.Group()
 
 star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
+laser_surf = pygame.image.load(join("..","images","laser.png")).convert_alpha()
 
 for i in range(20):
     Star(all_sprites, star_surf)
