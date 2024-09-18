@@ -29,6 +29,15 @@ class Player(pygame.sprite.Sprite):
         #initialize direction to [0,0]
         self.direction = pygame.Vector2()
         self.speed = 300
+        self.can_shoot = True
+        self.laser_shoot_time = 0
+        self.cooldown_duration = 400
+
+    def laser_time(self):
+        if not self.can_shoot:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.laser_shoot_time >= self.cooldown_duration:
+                self.can_shoot = True
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -39,10 +48,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.center += self.direction * self.speed * dt
 
         recent_keys = pygame.key.get_just_pressed()
-        if recent_keys[pygame.K_SPACE]:
+        if recent_keys[pygame.K_SPACE] and self.can_shoot:
             print("fire")
+            self.can_shoot = False
+            self.laser_shoot_time = pygame.time.get_ticks()
 
-
+        self.laser_time()
 
 
 all_sprites = pygame.sprite.Group()
@@ -56,7 +67,7 @@ player = Player(all_sprites)
 
 #custom event
 meteor_event = pygame.event.custom_type()
-#miliseconds, 500 = 0.5 seconds
+#miliseconds, 500 = 0.5 seconds, need understand how this work
 pygame.time.set_timer(meteor_event,500)
 
 while running:
