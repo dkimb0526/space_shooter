@@ -76,7 +76,7 @@ class Meteor(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(center = pos)
         self.start_time = pygame.time.get_ticks()
-        self.life_time = 100000
+        self.life_time = 3000
         self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
         self.speed = randint(400,500)
 
@@ -99,10 +99,17 @@ def collisions():
         if pygame.sprite.spritecollide(l, meteor_sprites, True):
             l.kill()
 
+def display_score():
+    current_time = pygame.time.get_ticks()//1000
+    text_surf = font.render(str(current_time), True, "red")
+    text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH//2, WINDOW_HEIGHT-50))
+    display_surface.blit(text_surf,text_rect)
 #imports
 star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
 laser_surf = pygame.image.load(join("..","images","laser.png")).convert_alpha()
 meteor_surf = pygame.image.load(join("..","images","meteor.png")).convert_alpha()
+#paramters(font,fontsize) none = default, importing custom font
+font = pygame.font.Font(join("..","images","Oxanium-Bold.ttf"),40)
 
 #sprites
 all_sprites = pygame.sprite.Group()
@@ -131,9 +138,8 @@ while running:
     #clock.tick(60)
 
     display_surface.fill("aquamarine")
-
+    display_score()
     all_sprites.update(dt)
-
     collisions()
 
 
