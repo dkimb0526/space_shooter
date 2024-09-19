@@ -99,7 +99,22 @@ class Meteor(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(self.og_img, self.rotation,1)
         #update rect based on rotated surface
         self.rect = self.image.get_frect(center = self.rect.center)
-    
+
+class AnimationExplosion(pygame.sprite.Sprite):
+    def __init__(self,frames,pos,groups):
+        super().__init__(groups)
+        self.frames = frames
+        self.frame_index = 0
+        self.image = self.frames[self.frame_index]
+        self.rect = self.image.get_frect(center=(pos))
+
+    def update(self,dt):
+        self.frame_index += 20 * dt
+        if self.frame_index < len(self.frames):
+            self.image = self.frames[int(self.frame_index)]
+        else:
+            self.kill()
+
 def collisions():
     global running
     #print(pygame.sprite.spritecollide(player, meteor_sprites, True))
@@ -111,6 +126,7 @@ def collisions():
     for l in laser_sprites:
         if pygame.sprite.spritecollide(l, meteor_sprites, True):
             l.kill()
+            AnimationExplosion(explosion_frames,l.rect.midtop, all_sprites)
 
 def display_score():
     current_time = pygame.time.get_ticks()//1000
@@ -124,6 +140,8 @@ laser_surf = pygame.image.load(join("..","images","laser.png")).convert_alpha()
 meteor_surf = pygame.image.load(join("..","images","meteor.png")).convert_alpha()
 #paramters(font,fontsize) none = default, importing custom font
 font = pygame.font.Font(join("..","images","Oxanium-Bold.ttf"),40)
+explosion_frames = [pygame.image.load(join("..","images/explosion",f"{i}.png")).convert_alpha() for i in range(21)]
+
 
 #sprites
 all_sprites = pygame.sprite.Group()
