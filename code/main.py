@@ -33,7 +33,9 @@ class Player(pygame.sprite.Sprite):
         self.laser_shoot_time = 0
         #miliseconds
         self.cooldown_duration = 400
-        #self.lasers = []
+        #getting a mask from image surface for better collision detections
+        self.mask = pygame.mask.from_surface(self.image)
+
 
     def laser_time(self):
         if not self.can_shoot:
@@ -64,6 +66,8 @@ class Laser(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_frect(midbottom = pos)
+        self.mask = pygame.mask.from_surface(self.image)
+
 
     def update(self, dt):
         self.rect.centery -= 400 *dt
@@ -73,12 +77,16 @@ class Laser(pygame.sprite.Sprite):
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, surf, pos, groups):
         super().__init__(groups)
-        self.image = surf
+        self.og_img = surf
+        self.image = self.og_img
         self.rect = self.image.get_frect(center = pos)
         self.start_time = pygame.time.get_ticks()
         self.life_time = 3000
+        #random between floating points
         self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
         self.speed = randint(400,500)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rotation = 0
 
     def update(self, dt):
         #center is a tuple(x, y) , direction is vector(a,b) it adds x to a and y to b
@@ -87,11 +95,16 @@ class Meteor(pygame.sprite.Sprite):
         if pygame.time.get_ticks() - self.start_time >= self.life_time:
             self.kill()
 
+        self.rotation += randint(0,100) * dt
+        self.image = pygame.transform.rotozoom(self.og_img, self.rotation,1)
+        #update rect based on rotated surface
+        self.rect = self.image.get_frect(center = self.rect.center)
     
 def collisions():
     global running
     #print(pygame.sprite.spritecollide(player, meteor_sprites, True))
-    if pygame.sprite.spritecollide(player, meteor_sprites, True):
+    #note using mask is hardware intensive
+    if pygame.sprite.spritecollide(player, meteor_sprites, True, pygame.sprite.collide_mask):
         running = False
 
     all_sprites.draw(display_surface)
@@ -104,6 +117,7 @@ def display_score():
     text_surf = font.render(str(current_time), True, "red")
     text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH//2, WINDOW_HEIGHT-50))
     display_surface.blit(text_surf,text_rect)
+    pygame.draw.rect(display_surface,"red",text_rect.inflate(20,10).move(0,-8),5,10)
 #imports
 star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
 laser_surf = pygame.image.load(join("..","images","laser.png")).convert_alpha()
