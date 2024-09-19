@@ -78,6 +78,7 @@ class Meteor(pygame.sprite.Sprite):
         self.speed = randint(400,500)
 
     def update(self, dt):
+        #center is a tuple(x, y) , direction is vector(a,b) it adds x to a and y to b
         self.rect.center += self.direction * self.speed * dt
         #self.start
         if pygame.time.get_ticks() - self.start_time >= self.life_time:
@@ -94,6 +95,8 @@ meteor_surf = pygame.image.load(join("..","images","meteor.png")).convert_alpha(
 
 #sprites
 all_sprites = pygame.sprite.Group()
+meteor_sprites = pygame.sprite.Group()
+
 for i in range(20):
     Star(all_sprites, star_surf)
 
@@ -112,7 +115,7 @@ while running:
 
         if event.type == meteor_event:
             x, y = randint(0,WINDOW_WIDTH),randint(-200,-100)
-            Meteor(meteor_surf,(x,y), all_sprites)
+            Meteor(meteor_surf,(x,y), (all_sprites, meteor_sprites))
     #clock.tick(60)
 
     display_surface.fill("aquamarine")
