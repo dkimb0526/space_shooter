@@ -5,7 +5,7 @@ from random import randint, uniform
 
 
 pygame.init()
-WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 800
+WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 pygame.display.set_caption("space shooter")
@@ -33,6 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.laser_shoot_time = 0
         #miliseconds
         self.cooldown_duration = 400
+        #self.lasers = []
 
     def laser_time(self):
         if not self.can_shoot:
@@ -50,11 +51,13 @@ class Player(pygame.sprite.Sprite):
 
         recent_keys = pygame.key.get_just_pressed()
         if recent_keys[pygame.K_SPACE] and self.can_shoot:
-            Laser(laser_surf, self.rect.midtop, all_sprites)
+            Laser(laser_surf, self.rect.midtop, (all_sprites, laser_sprites))
+
             self.can_shoot = False
             self.laser_shoot_time = pygame.time.get_ticks()
 
         self.laser_time()
+        
 
 class Laser(pygame.sprite.Sprite):
     def __init__(self, surf, pos, groups):
@@ -73,7 +76,7 @@ class Meteor(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(center = pos)
         self.start_time = pygame.time.get_ticks()
-        self.life_time = 3000
+        self.life_time = 100000
         self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
         self.speed = randint(400,500)
 
@@ -85,8 +88,16 @@ class Meteor(pygame.sprite.Sprite):
             self.kill()
 
     
+def collisions():
+    global running
+    #print(pygame.sprite.spritecollide(player, meteor_sprites, True))
+    if pygame.sprite.spritecollide(player, meteor_sprites, True):
+        running = False
 
-
+    all_sprites.draw(display_surface)
+    for l in laser_sprites:
+        if pygame.sprite.spritecollide(l, meteor_sprites, True):
+            l.kill()
 
 #imports
 star_surf = pygame.image.load(join("..","images","star.png")).convert_alpha()
@@ -96,6 +107,7 @@ meteor_surf = pygame.image.load(join("..","images","meteor.png")).convert_alpha(
 #sprites
 all_sprites = pygame.sprite.Group()
 meteor_sprites = pygame.sprite.Group()
+laser_sprites = pygame.sprite.Group()
 
 for i in range(20):
     Star(all_sprites, star_surf)
@@ -122,7 +134,8 @@ while running:
 
     all_sprites.update(dt)
 
-    all_sprites.draw(display_surface)
+    collisions()
+
 
     pygame.display.update()
 
